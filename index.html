@@ -4,7 +4,7 @@ req.onload = reqListener;
 req.onerror = function() {
     console.error('Request failed');
 };
-req.open('GET', 'https://monzo.com/sign-up', true);
+req.open('POST', 'https://monzo.com/sign-up', true);
 req.withCredentials = true;
 req.send();
 

